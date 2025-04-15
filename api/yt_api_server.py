@@ -1,25 +1,13 @@
+from vercel_python import Response
 from youtube_transcript_api import YouTubeTranscriptApi
 import json
 
-def handler(event, context):
-    request = event
-    video_id = request.get("queryStringParameters", {}).get("videoId")
+def handler(request):
+    video_id = request.args.get("videoId")
     if not video_id:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Missing videoId"}),
-            "headers": {"Content-Type": "application/json"}
-        }
+        return Response(json.dumps({"error": "Missing videoId"}), status=400, mimetype="application/json")
     try:
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        return {
-            "statusCode": 200,
-            "body": json.dumps(transcript),
-            "headers": {"Content-Type": "application/json"}
-        }
+        return Response(json.dumps(transcript), status=200, mimetype="application/json")
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": str(e)}),
-            "headers": {"Content-Type": "application/json"}
-        }
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype="application/json")
