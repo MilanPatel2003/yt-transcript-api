@@ -10,7 +10,9 @@ def get_transcript():
         return jsonify({"error": "Missing videoId"}), 400
     try:
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        return jsonify(transcript)
+        # Extract only the 'text' from each segment and join into a single paragraph
+        full_text = ' '.join([segment['text'] for segment in transcript])
+        return jsonify({"transcript": full_text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
